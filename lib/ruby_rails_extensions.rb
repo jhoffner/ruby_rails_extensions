@@ -7,6 +7,7 @@ require "ruby_rails_extensions/core/hash_extensions"
 require "ruby_rails_extensions/core/module_extensions"
 require "ruby_rails_extensions/core/object_extensions"
 require "ruby_rails_extensions/core/string_extensions"
+require "ruby_rails_extensions/core/time_extensions"
 
 if Object.const_defined? "ActionView"
   require "ruby_rails_extensions/helpers/form_helper"

@@ -16,12 +16,33 @@ class Hash
     self.reverse_merge! hash
   end
 
+  #
+  # Same as calling map except that it returns a new hash instead of an array. key/values pairs inside of required
+  # block should return an array
+  #
+  def map_as_hash(&block)
+    Hash[map(&block)]
+  end
+
+  #
+  # returns a new version of this hash with the keys transformed based off of the transform method passed in.
+  # EXAMPLE: {a:1}.transform_keys(:upcase) => {'A' => 1}
+  #
+  def transform_keys(transform_method, *args)
+    map_as_hash do |k, v|
+      [k.to_s.send(transform_method, *args), v]
+    end
+  end
+
   # pushes an array into the hash as a key/value pair
   #def push(arr)
   #  raise "Invalid argument size - size should equal 2" if arr.size != 2
   #  self[arr[0]] = arr[1]
   #end
 
+  #
+  # Makes the hash dynamic, allowing its hash values to be accessed as if they were properties on the object.
+  #
   def make_dynamic(cascade = false)
     self.extend(DynamicAttrs) unless is_a? DynamicAttrs
 
@@ -32,6 +53,8 @@ class Hash
         end
       end
     end
+
+    self
 
   end
 

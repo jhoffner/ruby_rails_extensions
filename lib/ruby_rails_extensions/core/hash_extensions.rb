@@ -65,7 +65,7 @@ class Hash
       text = key.to_s
 
       # if setter method
-      if (text[-1,1] == '=')
+      if (text[-1,1] == '=' and args.length == 1)
         text = text.chop
         # if there is already a text version of the key then set that version
         if self.key? text
@@ -74,12 +74,16 @@ class Hash
         else
           self[text.to_sym] = args[0]
         end
-      # else if a text version of the key is already set
-      elsif self.key? text
-        self[text]
-      # else use the symbol version of the key
+      elsif args.length == 0
+        #if a text version of the key is already set
+        if self.key? text
+          self[text]
+        # else use the symbol version of the key
+        else
+          self[key]
+        end
       else
-        self[key]
+        super(key, *args)
       end
     end
   end

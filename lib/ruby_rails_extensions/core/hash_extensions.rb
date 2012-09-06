@@ -43,15 +43,16 @@ class Hash
   #
   # Makes the hash dynamic, allowing its hash values to be accessed as if they were properties on the object.
   #
-  def make_dynamic(cascade = false)
+  def make_dynamic(cascade = false, allow_dynamic_new_properties = false)
     self.extend(DynamicAttrs) unless is_a? DynamicAttrs
+    @allow_dynamic_new_properties = allow_dynamic_new_properties
 
     if cascade
       self.each do |key, val|
         if val.is_a? Hash
-          val.make_dynamic cascade
+          val.make_dynamic cascade, allow_dynamic_new_properties
         elsif val.is_a? Array
-          val.each {|v| v.make_dynamic cascade if v.is_a? Hash}
+          val.map {|v| v.make_dynamic(cascade, allow_dynamic_new_properties) if v.is_a? Hash}
         end
       end
     end
@@ -70,17 +71,21 @@ class Hash
         # if there is already a text version of the key then set that version
         if self.key? text
           self[text] = args[0]
-        # otherwise use the sym version
-        else
+          # otherwise use the sym version
+        elsif self.key? text.to_sym or @allow_dynamic_new_properties
           self[text.to_sym] = args[0]
+        else
+          super
         end
       elsif args.length == 0
         #if a text version of the key is already set
         if self.key? text
           self[text]
-        # else use the symbol version of the key
-        else
+          # else use the symbol version of the key
+        elsif self.key? key
           self[key]
+        else
+          super
         end
       else
         super(key, *args)

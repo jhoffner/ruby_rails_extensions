@@ -64,10 +64,22 @@ class Hash
 
       # if setter method
       if (text[-1,1] == '=')
-        self[text.chop.to_sym] = args[0]
+        text = text.chop
+        # if there is already a text version of the key then set that version
+        if self.key? text
+          self[text] = args[0]
+        # otherwise use the sym version
+        else
+          self[text.to_sym] = args[0]
+        end
+      # else if a text version of the key is already set
+      elsif self.key? text
+        self[text]
+      # else use the symbol version of the key
       else
         self[key]
       end
     end
   end
+
 end

@@ -50,6 +50,8 @@ class Hash
       self.each do |key, val|
         if val.is_a? Hash
           val.make_dynamic cascade
+        elsif val.is_a? Array
+          val.each {|v| v.make_dynamic cascade if v.is_a? Hash}
         end
       end
     end
